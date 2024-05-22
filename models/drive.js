@@ -1,8 +1,12 @@
-const mongoose = require("mongoose");
-const driver = require("./driver");
+const mongoose = require('mongoose');
+// const Driver = require('./driver');
 
 const driveScema = new mongoose.Schema({
-    driver:driver,
+    driveID:String,
+    driver: {
+        type: [mongoose.Schema.Types.ObjectId], 
+        ref: 'Drivers'
+    },
     leavingTime:Date,
     startingPoint: {
         city:String,

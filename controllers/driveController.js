@@ -1,0 +1,54 @@
+const Drive = require('../models/drive');
+
+exports.createDrive = async (req, res) => {
+    try {
+        const drv = await Drive.create(req.body);
+        console.log("create drv",drv);
+        if(!drv)
+            res.status(404).json({ message: 'Failed to get drv' });
+        res.json(req.body);
+    } catch (error) {
+        res.status(500).json({ message: 'dont connected'+ error });
+    }
+};
+
+exports.getAllDrives = async (req, res) => {
+    try {
+        driverCollection = await Drive.find();
+        res.json(driverCollection);
+
+    } catch (error) {
+        res.status(500).json({ message: 'dont connected' });
+    }
+};
+
+// exports.getDriveByName = async (req, res) => {
+//     try {
+//         const driver = await Drive.findOne(req.params);
+//         res.json(driver);
+
+//     } catch (error) {
+//         res.status(500).json({ message: 'dont connected' });
+//     }
+// };
+
+exports.deleteDrive = async (req, res) => {
+    try {
+        const drive = await Drive.findOneAndDelete({driveID:req.params.id});
+        res.json(drive);
+    } catch (err) {
+        res.status(500).json({ message: 'dont connected' });
+    }
+};
+
+
+exports.updateDrive = async (req, res) => {
+    try {
+        const drive = await Drive.findOneAndUpdate({driveID:req.params.id},req.body);
+        if(!drive)
+            res.status(404).json({ message: 'Failed to get drive' });
+        res.json(drive);
+    } catch (err) {
+        res.status(500).json({ message: 'dont connected' });
+    }
+};
