@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
-// const Driver = require('./driver');
 
 const driveScema = new mongoose.Schema({
-    driveID:String,
+    driveID:{ type: 'ObjectId', auto: true },
     driver: {
-        type: [mongoose.Schema.Types.ObjectId], 
+        type: 'ObjectId', 
         ref: 'Drivers'
     },
     leavingTime:Date,
