@@ -12,19 +12,30 @@ exports.createDrive = async (req, res) => {
     }
 };
 
-exports.getAllDrives = async (req, res) => {
+exports.getByStartingPointToDestinationes = async (req, res) => {
     try {
-        driverCollection = await Drive.find();
+        const { startingPoint, target} = req.body
+        driverCollection = await Drive.find({startingPoint:startingPoint, target:target});
         res.json(driverCollection);
 
     } catch (error) {
-        res.status(500).json({ message: 'dont connected' });
+        res.status(500).json({ message: 'dont connected' + error });
     }
 };
 
+// exports.getAllDrives = async (req, res) => {
+//     try {
+//         driverCollection = await Drive.find();
+//         res.json(driverCollection);
+
+//     } catch (error) {
+//         res.status(500).json({ message: 'dont connected' });
+//     }
+// };
+
 // exports.getDriveByName = async (req, res) => {
 //     try {
-//         const driver = await Drive.findOne(req.params);
+//         const driver = await Drive.findOne(req.params.name);
 //         res.json(driver);
 
 //     } catch (error) {
