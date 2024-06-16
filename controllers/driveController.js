@@ -3,7 +3,11 @@ const Drive = require('../models/drive');
 exports.createDrive = async (req, res) => {
     try {
         const drv = await Drive.create(req.body);
-        console.log("create drv",drv);
+        const roomName = `${drv.driveID}`; 
+        io.of('/').adapter.on('create-room', (room) => {
+            if (room === roomName) {
+                console.log(`A new chat room "${roomName}" is created for drive ID ${drv._id}`);
+            }})
         if(!drv)
             res.status(404).json({ message: 'Failed to get drv' });
         res.json(req.body);
