@@ -33,15 +33,15 @@ exports.getByStartingPointToDestinationes = async (req, res) => {
 //     }
 // };
 
-// exports.getDriveByName = async (req, res) => {
-//     try {
-//         const driver = await Drive.findOne(req.params.name);
-//         res.json(driver);
+exports.getDriveById = async (req, res) => {
+    try {
+        const driver = await Drive.findById(req.params.id);
+        res.json(driver);
 
-//     } catch (error) {
-//         res.status(500).json({ message: 'dont connected' });
-//     }
-// };
+    } catch (error) {
+        res.status(500).json({ message: 'dont connected' });
+    }
+};
 
 exports.deleteDrive = async (req, res) => {
     try {
