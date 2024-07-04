@@ -1,11 +1,12 @@
 const Driver = require('../models/driver');
-const { generateToken } = require('../middlewares/JWT')
+const { generateToken } = require('../services/jwt')
 exports.createDriver = async (req, res) => {
     try {
         let drv = req.body;
         if (req.body.driverID == null) {
             console.log("id null");
             drv = await Driver.create(req.body);
+            console.log("drv",drv)
             if (!drv)
                 res.status(404).json({ message: 'Failed to get drv' });
         }
@@ -13,9 +14,10 @@ exports.createDriver = async (req, res) => {
             drv = this.getDriverByNameandPassword(req.body.name, req.body.password)
             console.log("drv", drv);
         }
-
-        // const token = generateToken(drv.driverID, drv.password);
-        // res.json(token);
+        const token = generateToken(drv.driverID, drv.password);
+        console.log("token",token);
+        res.send({token:token,newDriver:drv});
+        // res.send(drv);
     } catch (error) {
         res.status(500).json({ message: 'dont connected' + error });
     }

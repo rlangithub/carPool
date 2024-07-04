@@ -1,37 +1,89 @@
+// require("dotenv").config();
+// const express = require('express');
+// const mongoose = require('mongoose');
+// const bodyParser = require('body-parser');
+// const driverRouter = require('./routes/driver');
+// const driveRouter = require('./routes/drive');
+// const massageRouter = require('./routes/massage')
+// const http = require('http');
+// const { Server } = require('socket.io');
+
+// const app = express();
+// const server = http.createServer(app);
+// const PORT = process.env.PORT || 5000;
+
+
+// const io = new Server(server, {
+//     cors: {
+//         origin: '*',
+//         credentials: true,
+//     },
+// });
+
+
+// // טיפול באירועים של socket.io
+// io.on('connection', (socket) => {
+//     console.log('משתמש חדש מחובר');
+
+//     // Handle 'create-room' event here
+//     socket.on('create-room', (roomName) => {
+//         console.log(`A new chat room "${roomName}" is requested`);
+//         // You can then emit events or perform actions related to room creation
+//     });
+
+//     // טיפול בהודעות שנשלחות בחדר צ'אט
+//     socket.on('chatMessage', (message) => {
+//         // לשלוח את ההודעה לחדר המתאים
+//         io.to(message.room).emit('chatMessage', message);
+//     });
+
+//     // טיפול בהתנתקות
+//     socket.on('disconnect', () => {
+//         console.log('משתמש מנותק');
+//     });
+// });
+
+// app.use(bodyParser.json());
+// app.use('/driver', driverRouter(io));
+// app.use('/drive', driveRouter(io))
+// app.use('/massage', massageRouter);
+
+// mongoose.connect(process.env.CONECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true }).then(
+//     () => app.listen(PORT, () => console.log(`server runing on port ${PORT}`)))
+//     .catch((error) => console.log(error.message));
+
 require("dotenv").config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const driverRouter = require('./routes/driver');
-const driveRouter = require('./routes/drive');
 const http = require('http');
 const { Server } = require('socket.io');
+const cors = require('cors');
+
+
+const driverRouter = require('./routes/driver');
+const driveRouter = require('./routes/drive');
+const massageRouter = require('./routes/massage');
 
 const app = express();
 const server = http.createServer(app);
-app.use(bodyParser.json());
-app.use('/driver', driverRouter);
-app.use('/drive', driveRouter);
-const PORT = process.env.PORT || 5000;
-
-
 const io = new Server(server, {
-  cors: {
-    origin: '*',
-    credentials: true,
-  },
+    cors: {
+        origin: '*',
+        credentials: true,
+    },
 });
+app.use(cors());
 
 
 // טיפול באירועים של socket.io
 io.on('connection', (socket) => {
     console.log('משתמש חדש מחובר');
 
-    // כאשר נסיעה חדשה נוצרת
-    socket.on('createRoom', (roomName) => {
-        // יצירת חדר צ'אט חדש
-        socket.join(roomName);
-        console.log(`חדר צ'אט חדש נוצר: ${roomName}`);
+    // Handle 'create-room' event here
+    socket.on('create-room', (roomName) => {
+        console.log(`A new chat room "${roomName}" is requested`);
+        // You can then emit events or perform actions related to room creation
     });
 
     // טיפול בהודעות שנשלחות בחדר צ'אט
@@ -46,13 +98,26 @@ io.on('connection', (socket) => {
     });
 });
 
+// Middleware
+app.use(bodyParser.json());
 
+// Routes
+app.use('/driver', driverRouter);
+app.use('/drive', driveRouter(io)); // Ensure io instance is passed if needed
+app.use('/massage', massageRouter);
 
+// MongoDB Connection
+const PORT = process.env.PORT || 5000;
+const CONNECTION_URL = process.env.CONNECTION_URL;
 
+mongoose.connect(process.env.CONECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => {
+        server.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.error('MongoDB connection error:', error.message);
+    });
 
-
-
-
-mongoose.connect(process.env.CONECTION_URL,{useNewUrlParser:true,useUnifiedTopology:true}).then(
-    ()=>app.listen(PORT,()=>console.log(`server runing on port ${PORT}`)))
-    .catch((error)=>console.log(error.message));
+module.exports = app;
