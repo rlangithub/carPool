@@ -59,7 +59,8 @@ const bodyParser = require('body-parser');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
-
+const { joinUser } = require('./services/chat')
+const { addUser, getUser, deleteUser, getUsers } = require('./controllers/userController')
 
 const driverRouter = require('./routes/driver');
 const driveRouter = require('./routes/drive');
@@ -78,7 +79,18 @@ app.use(cors());
 
 // טיפול באירועים של socket.io
 io.on('connection', (socket) => {
-    console.log('משתמש חדש מחובר');
+    console.log('new user');
+    // socket.on('new', (name, room) => {
+    //     console.log('new -room',room );
+    //     const user  = addUser(socket.id, name, room);
+    //     console.log("user",user);
+    //     // socket.join(user.room)
+    //     joinUser(socket, room, name);
+    //     console.log("after joinUser");
+    //     // socket.in(room).emit('notification', { title: 'Someone\'s here', description: `${user.name} just entered the room` })
+    //     // io.in(room).emit('users', getUsers(room))
+    // })
+    
 
     // Handle 'create-room' event here
     socket.on('create-room', (roomName) => {
@@ -86,15 +98,20 @@ io.on('connection', (socket) => {
         // You can then emit events or perform actions related to room creation
     });
 
+    // socket.on('message', (message) => {
+    //     console.log("message function");
+    //     io.emit('message', message);
+    //   });
 
-    // socket.on('login', ({ name, room }, callback) => {
-    //     const { user, error } = addUser(socket.id, name, room)
-    //     if (error) return callback(error)
-    //     socket.join(user.room)
-    //     socket.in(room).emit('notification', { title: 'Someone\'s here', description: `${user.name} just entered the room` })
-    //     io.in(room).emit('users', getUsers(room))
-    //     callback()
-    // })
+    socket.on('login', ({ name, room }, callback) => {
+        console.log('login');
+        const { user, error } = addUser(socket.id, name, room)
+        if (error) return callback(error)
+        socket.join(user.room)
+        socket.in(room).emit('notification', { title: 'Someone\'s here', description: `${user.name} just entered the room` })
+        io.in(room).emit('users', getUsers(room))
+        callback()
+    })
 
 
     // טיפול בהודעות שנשלחות בחדר צ'אט
@@ -105,19 +122,21 @@ io.on('connection', (socket) => {
 
     //טיפול בהודאה חדשה שנשלחה מהמשתמש
     socket.on('sendMessage', message => {
-        console.log("sendMessage",message);
-        const user = getUser(socket.id)
+        console.log("sendMessage", message);
+        const user = getUser(socket.id);
+        console.log("user object",user);
         io.in(user.room).emit('message', { user: user.name, text: message });
     })
 
     // טיפול בהתנתקות
     socket.on("disconnect", () => {
         console.log("User disconnected");
-        // const user = deleteUser(socket.id)
-        // if (user) {
-        //     io.in(user.room).emit('notification', { title: 'Someone just left', description: `${user.name} just left the room` })
-        //     io.in(user.room).emit('users', getUsers(user.room))
-        // }
+        const user = deleteUser(socket.id)
+        if (user) {
+            io.in(user.room).emit('notification', { title: 'Someone just left', description: `${user.name} just left the room` })
+            io.in(user.room).emit('users', getUsers(user.room))
+        }
+        console.log("User disconnected2");
     })
 
 

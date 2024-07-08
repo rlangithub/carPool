@@ -13,7 +13,7 @@ const addUser = (id, name, room) => {
     return { user }
 }
 
-const getUser = id => {
+const getUser = (id) => {
     let user = users.find(user => user.id == id)
     return user
 }
