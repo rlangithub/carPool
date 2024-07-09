@@ -128,10 +128,9 @@ app.use(bodyParser.json());
 
 // Routes
 app.use('/driver', driverRouter);
-app.use('/drive', driveRouter(io)); // Ensure io instance is passed if needed
+app.use('/drive', driveRouter(io));
 app.use('/massage', massageRouter);
 
-// MongoDB Connection
 const PORT = process.env.PORT || 5000;
 const CONNECTION_URL = process.env.CONNECTION_URL;
 
