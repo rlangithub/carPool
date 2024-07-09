@@ -3,10 +3,10 @@ const { generateToken } = require('../services/jwt')
 exports.createDriver = async (req, res) => {
     try {
         let drv = req.body;
-        if (req.body.driverID == null) {
+        if (req.body.id == null) {
             console.log("id null");
             drv = await Driver.create(req.body);
-            console.log("drv",drv)
+            console.log("drv", drv)
             if (!drv)
                 res.status(404).json({ message: 'Failed to get drv' });
         }
@@ -14,16 +14,16 @@ exports.createDriver = async (req, res) => {
             drv = this.getDriverByNameandPassword(req.body.name, req.body.password)
             console.log("drv", drv);
         }
-        const token = generateToken(drv.driverID, drv.password);
-        console.log("token",token);
-        res.send({token:token,newDriver:drv});
+        const token = generateToken(drv.id, drv.password);
+        console.log("token", token);
+        res.send({ token: token, newDriver: drv });
         // res.send(drv);
     } catch (error) {
         res.status(500).json({ message: 'dont connected' + error });
     }
 };
 
-exports.getDriverByNameandPassword = async (name,password) => {
+exports.getDriverByNameandPassword = async (name, password) => {
     try {
         console.log("getDriverByNameandPassword");
         const driver = await Driver.findOne(name, password);
@@ -33,7 +33,7 @@ exports.getDriverByNameandPassword = async (name,password) => {
         return (null);
 
     } catch (error) {
-        return ('dont connected' );
+        return ('dont connected');
     }
 };
 
@@ -47,11 +47,20 @@ exports.getAllDrivers = async (req, res) => {
     }
 };
 
+exports.getDriveById = async (req, res) => {
+    try {
+        const driver = await Driver.find({id:req.params.id});
+        res.send(driver);
+
+    } catch (error) {
+        res.status(500).json({ message: 'dont connected' });
+    }
+};
 
 
 exports.deleteDriver = async (req, res) => {
     try {
-        const driver = await Driver.findOneAndDelete({ driverID: req.params.id });
+        const driver = await Driver.findOneAndDelete({ id: req.params.id });
         res.json(driver);
     } catch (err) {
         res.status(500).json({ message: 'dont connected' });
@@ -61,7 +70,7 @@ exports.deleteDriver = async (req, res) => {
 
 exports.updateDriver = async (req, res) => {
     try {
-        const driver = await Driver.findOneAndUpdate({ driverID: req.params.id }, req.body);
+        const driver = await Driver.findOneAndUpdate({ id: req.params.id }, req.body);
         if (!driver)
             res.status(404).json({ message: 'Failed to get driver' });
         res.json(driver);

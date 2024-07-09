@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const driveScema = new mongoose.Schema({
-    driveID:{ type: 'ObjectId', auto: true },
+    id:{ type: 'ObjectId', auto: true },
     driver: {
         type: 'ObjectId', 
         ref: 'Drivers'
