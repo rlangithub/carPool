@@ -4,6 +4,7 @@ const app = require('express')();
 const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const { joinUser } = require('../services/chat')
+const { serviceGetDriveById } = require('../services/drive');
 // exports.createDrive = async (req, res, io, socket) => {
     exports.createDrive = async (req, res) => {
     try {
@@ -57,8 +58,8 @@ exports.getAllDrives = async (req, res) => {
 
 exports.getDriveById = async (req, res) => {
     try {
-        // console.log('req.params.id',req.body.id);
-        const drives = await Drive.find({driver:req.params.id});
+        console.log('req.params.id',req.params.id);
+        const drives = await serviceGetDriveById(req.params.id)
         res.send(drives);
 
     } catch (error) {
@@ -79,6 +80,7 @@ exports.deleteDrive = async (req, res) => {
 exports.updateDrive = async (req, res) => {
     try {
         const drive = await Drive.findOneAndUpdate({ id: req.params.id }, req.body);
+
         if (!drive)
             res.status(404).json({ message: 'Failed to get drive' });
         res.json(drive);

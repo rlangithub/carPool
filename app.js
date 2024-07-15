@@ -64,6 +64,7 @@ const { addUser, getUser, deleteUser, getUsers } = require('./controllers/userCo
 
 const driverRouter = require('./routes/driver');
 const driveRouter = require('./routes/drive');
+const passengerRouter = require('./routes/passenger');
 const massageRouter = require('./routes/massage');
 
 const app = express();
@@ -77,7 +78,6 @@ const io = new Server(server, {
 app.use(cors());
 
 
-// טיפול באירועים של socket.io
 io.on('connection', (socket) => {
     console.log('new user');
     // socket.on('new', (name, room) => {
@@ -92,11 +92,7 @@ io.on('connection', (socket) => {
     // })
     
 
-    // Handle 'create-room' event here
-    socket.on('create-room', (roomName) => {
-        console.log(`A new chat room "${roomName}" is requested`);
-        // You can then emit events or perform actions related to room creation
-    });
+    
 
     // socket.on('message', (message) => {
     //     console.log("message function");
@@ -148,10 +144,11 @@ app.use(bodyParser.json());
 // Routes
 app.use('/driver', driverRouter);
 app.use('/drive', driveRouter(io));
+// app.use('/join', passengerRouter(io));
+app.use('/join', passengerRouter);
 app.use('/massage', massageRouter);
 
 const PORT = process.env.PORT || 5000;
-const CONNECTION_URL = process.env.CONNECTION_URL;
 
 mongoose.connect(process.env.CONECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => {
