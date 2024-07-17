@@ -23,17 +23,17 @@ exports.createDriver = async (req, res) => {
     }
 };
 
-exports.getDriverByNameandPassword = async (name, password) => {
+exports.getDriverByNameandPassword = async (req, res) => {
     try {
         console.log("getDriverByNameandPassword");
-        const driver = await Driver.findOne(name, password);
-        if (driver) {
-            return (driver);
+        const driver = await Driver.findOne(req.body.name, req.body.password);
+        if (!driver) {
+            res.send("dont found")
         }
-        return (null);
+        res.send(driver)
 
     } catch (error) {
-        return ('dont connected');
+        res.status(500).json({ message: 'dont connected' + error });
     }
 };
 
