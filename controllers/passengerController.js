@@ -5,7 +5,8 @@ exports.joinDrive = async (req, res) => {
     // exports.joinDriver = async (req, res, socket) => {
     try {
         const currentDrive = await serviceGetDriveById(req.params.id);
-        if (currentDrive.passengers.length < currentDrive.availablePlaces) {
+        console.log("currentDrive",currentDrive);
+        if (currentDrive.passengers.length < currentDrive.places) {
             currentDrive.passengers.push(req.body);
             await currentDrive.save();
            
