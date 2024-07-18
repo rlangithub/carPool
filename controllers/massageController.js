@@ -1,12 +1,13 @@
 const Massage = require('../models/massage');
+const { serviceGetDriveById } = require('../services/drive');
+
 exports.createMassage = async (req, res) => {
     try {
-        console.log("massage");
-        const msg = await Massage.create(req.body);
+        const currentDrive = await serviceGetDriveById(req.params.id);
+        currentDrive.massages.push(req.body);
+        await currentDrive.save();
 
-        if (!msg)
-            res.status(404).json({ message: 'Failed to get msg' });
-        console.log("msg", msg);
+        console.log("msg", res.body);
     } catch (error) {
         res.status(500).json({ message: 'dont connected' + error });
     }

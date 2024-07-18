@@ -5,31 +5,39 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 const { joinUser } = require('../services/chat')
 const { serviceGetDriveById } = require('../services/drive');
+const { jwtMiddleware } = require('../middlewares/JWT')
 // exports.createDrive = async (req, res, io, socket) => {
-    exports.createDrive = async (req, res) => {
+exports.createDrive = async (req, res) => {
     try {
-        const drv = await Drive.create(req.body);
-        // const populatedDrive = await Drive.findById(drv._id).populate('driver', 'name');
-        // if (!populatedDrive) {
-        //     res.status(404).json({ message: 'Failed to get drv' });
-        //     return;
-        // }
-        // console.log(`1 Driver's name for this drive: ${populatedDrive.driver.name}`);
-        // console.log('2', populatedDrive);
-        // const roomName = `${drv.id}`;
-        // io.emit('create-room', roomName);
-        // console.log('3 after io.emit');
-        // io.of('/').adapter.on('create-room', (room) => {
-        //     console.log("io.of");
-        //     if (room === roomName) {
-        //         console.log(`A new chat room "${roomName}" is created for drive ID ${drv._id}`);
-        //     }
-        // })
-        // joinUser(io,socket, roomName, populatedDrive.driver.name);
-        // console.log('4 after joinUser');
-        if (!drv)
-            res.status(404).json({ message: 'Failed to get drv' });
-        res.json(req.body);
+        // console.log("jwtMiddleware(req.body.token)",);
+        if (jwtMiddleware(req.body.token)) {
+            console.log('req.body.data',req.body.data);
+            const drv = await Drive.create(req.body.data);
+            // const populatedDrive = await Drive.findById(drv._id).populate('driver', 'name');
+            // if (!populatedDrive) {
+            //     res.status(404).json({ message: 'Failed to get drv' });
+            // }
+            // console.log(`1 Driver's name for this drive: ${populatedDrive.driver.name}`);
+            // console.log('2', populatedDrive);
+            // const roomName = `${drv.id}`;
+            // io.emit('create-room', roomName);
+            // console.log('3 after io.emit');
+            // io.of('/').adapter.on('create-room', (room) => {
+            //     console.log("io.of");
+            //     if (room === roomName) {
+            //         console.log(`A new chat room "${roomName}" is created for drive ID ${drv._id}`);
+            //     }
+            // })
+            // joinUser(io,socket, roomName, populatedDrive.driver.name);
+            // console.log('4 after joinUser');
+            if (!drv)
+                res.status(404).json({ message: 'Failed to get drv' });
+            console.log(drv);
+            // res.send(drv);
+        } else {
+            res.status(401).json({ error: 'אימות נכשל: טוקן לא תקין' })
+        }
+
     } catch (error) {
         res.status(500).json({ message: 'dont connected' + error });
     }
@@ -58,7 +66,6 @@ exports.getAllDrives = async (req, res) => {
 
 exports.getDriveById = async (req, res) => {
     try {
-        console.log('req.params.id',req.params.id);
         const drives = await serviceGetDriveById(req.params.id)
         res.send(drives);
 

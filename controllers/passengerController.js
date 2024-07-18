@@ -1,19 +1,17 @@
 const { serviceGetDriveById } = require('../services/drive');
-const Drive = require('../models/drive');
 const { joinUser } = require('../services/chat');
 
 exports.joinDrive = async (req, res) => {
     // exports.joinDriver = async (req, res, socket) => {
     try {
         const currentDrive = await serviceGetDriveById(req.params.id);
-        if (currentDrive.passengers.length < currentDrive.availablePlaces) {
-            console.log("req.body", req.body);
+        console.log("currentDrive",currentDrive);
+        if (currentDrive.passengers.length < currentDrive.places) {
             currentDrive.passengers.push(req.body);
             await currentDrive.save();
            
-            // joinUser(socket, currentDrive.id, req.body.name);
+            joinUser(socket, currentDrive.id, req.body.name);
             // joinUser(io);
-            console.log("after joinUser");
             res.json(currentDrive.passengers)
         } else {
             console.log("donrt have a places");

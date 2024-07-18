@@ -4,18 +4,16 @@ exports.createDriver = async (req, res) => {
     try {
         let drv = req.body;
         if (req.body.id == null) {
-            console.log("id null");
             drv = await Driver.create(req.body);
-            console.log("drv", drv)
-            if (!drv)
+            if (!drv) {
                 res.status(404).json({ message: 'Failed to get drv' });
+            }
         }
         else {
-            drv = this.getDriverByNameandPassword(req.body.name, req.body.password)
-            console.log("drv", drv);
+            drv = this.getDriverByNameandPassword(req.body.name, req.body.password);
         }
         const token = generateToken(drv.id, drv.password);
-        console.log("token", token);
+        console.log('token',token);
         res.send({ token: token, newDriver: drv });
         // res.send(drv);
     } catch (error) {
@@ -23,17 +21,17 @@ exports.createDriver = async (req, res) => {
     }
 };
 
-exports.getDriverByNameandPassword = async (name, password) => {
+exports.getDriverByNameandPassword = async (req, res) => {
     try {
         console.log("getDriverByNameandPassword");
-        const driver = await Driver.findOne(name, password);
-        if (driver) {
-            return (driver);
+        const driver = await Driver.findOne(req.body.name, req.body.password);
+        if (!driver) {
+            res.send("dont found")
         }
-        return (null);
+        res.send(driver)
 
     } catch (error) {
-        return ('dont connected');
+        res.status(500).json({ message: 'dont connected' + error });
     }
 };
 
@@ -49,7 +47,7 @@ exports.getAllDrivers = async (req, res) => {
 
 exports.getDriveById = async (req, res) => {
     try {
-        const driver = await Driver.find({id:req.params.id});
+        const driver = await Driver.find({ id: req.params.id });
         res.send(driver);
 
     } catch (error) {
