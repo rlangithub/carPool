@@ -6,33 +6,12 @@ const io = require('socket.io')(server);
 const { joinUser } = require('../services/chat')
 const { serviceGetDriveById } = require('../services/drive');
 const { jwtMiddleware } = require('../middlewares/JWT')
-// exports.createDrive = async (req, res, io, socket) => {
 exports.createDrive = async (req, res) => {
     try {
-        // console.log("jwtMiddleware(req.body.token)",);
-        if (jwtMiddleware(req.body.token)) {
-            console.log('req.body.data',req.body.data);
+        if (jwtMiddleware(req.body.token,req.body.driver)) {
             const newDrive = await Drive.create(req.body.data);
-            // const populatedDrive = await Drive.findById(newDrive._id).populate('driver', 'name');
-            // if (!populatedDrive) {
-            //     res.status(404).json({ message: 'Failed to get newDrive' });
-            // }
-            // console.log(`1 Driver's name for this drive: ${populatedDrive.driver.name}`);
-            // console.log('2', populatedDrive);
-            // const roomName = `${newDrive.id}`;
-            // io.emit('create-room', roomName);
-            // console.log('3 after io.emit');
-            // io.of('/').adapter.on('create-room', (room) => {
-            //     console.log("io.of");
-            //     if (room === roomName) {
-            //         console.log(`A new chat room "${roomName}" is created for drive ID ${newDrive._id}`);
-            //     }
-            // })
-            // joinUser(io,socket, roomName, populatedDrive.driver.name);
-            // console.log('4 after joinUser');
             if (!newDrive)
                 res.status(404).json({ message: 'Failed to get newDrive' });
-            console.log("newDrive",newDrive);
             res.send(newDrive);
         } else {
             res.status(401).json({ error: 'אימות נכשל: טוקן לא תקין' })
@@ -66,7 +45,7 @@ exports.getAllDrives = async (req, res) => {
 
 exports.getDriveById = async (req, res) => {
     try {
-        const drives = await serviceGetDriveById(req.params.id)
+        const drives = await serviceGetDriveById(req.params.id,'drive' )
         res.send(drives);
 
     } catch (error) {
@@ -76,8 +55,13 @@ exports.getDriveById = async (req, res) => {
 
 exports.deleteDrive = async (req, res) => {
     try {
-        const drive = await Drive.findOneAndDelete({ id: req.params.id });
-        res.json(drive);
+        if (req.body.token && jwtMiddleware(req.body.token, req.body.driver)) {
+            const drive = await Drive.findOneAndDelete({ id: req.params.id });
+            res.status(200).json({ message: 'delete- sucsses' })
+        } else {
+            res.status(401).json({ error: 'אימות נכשל: טוקן לא תקין' })
+        }
+
     } catch (err) {
         res.status(500).json({ message: 'dont connected' });
     }
