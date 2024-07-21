@@ -12,28 +12,28 @@ exports.createDrive = async (req, res) => {
         // console.log("jwtMiddleware(req.body.token)",);
         if (jwtMiddleware(req.body.token)) {
             console.log('req.body.data',req.body.data);
-            const drv = await Drive.create(req.body.data);
-            // const populatedDrive = await Drive.findById(drv._id).populate('driver', 'name');
+            const newDrive = await Drive.create(req.body.data);
+            // const populatedDrive = await Drive.findById(newDrive._id).populate('driver', 'name');
             // if (!populatedDrive) {
-            //     res.status(404).json({ message: 'Failed to get drv' });
+            //     res.status(404).json({ message: 'Failed to get newDrive' });
             // }
             // console.log(`1 Driver's name for this drive: ${populatedDrive.driver.name}`);
             // console.log('2', populatedDrive);
-            // const roomName = `${drv.id}`;
+            // const roomName = `${newDrive.id}`;
             // io.emit('create-room', roomName);
             // console.log('3 after io.emit');
             // io.of('/').adapter.on('create-room', (room) => {
             //     console.log("io.of");
             //     if (room === roomName) {
-            //         console.log(`A new chat room "${roomName}" is created for drive ID ${drv._id}`);
+            //         console.log(`A new chat room "${roomName}" is created for drive ID ${newDrive._id}`);
             //     }
             // })
             // joinUser(io,socket, roomName, populatedDrive.driver.name);
             // console.log('4 after joinUser');
-            if (!drv)
-                res.status(404).json({ message: 'Failed to get drv' });
-            console.log(drv);
-            // res.send(drv);
+            if (!newDrive)
+                res.status(404).json({ message: 'Failed to get newDrive' });
+            console.log("newDrive",newDrive);
+            res.send(newDrive);
         } else {
             res.status(401).json({ error: 'אימות נכשל: טוקן לא תקין' })
         }
