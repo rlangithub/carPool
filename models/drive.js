@@ -19,6 +19,7 @@ const driveScema = new mongoose.Schema({
     },
     price: Number,
     places: Number,
-    passengers:[]
+    passengers:[],
+    masseges:[]
 });
 module.exports = mongoose.model("Drives", driveScema);
