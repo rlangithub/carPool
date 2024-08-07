@@ -19,12 +19,3 @@ exports.getAllMassages = async (req, res) => {
         res.status(500).json({ message: 'dont connected' });
     }
 };
-
-exports.deleteMassage = async (req, res) => {
-    try {
-        const massage = await Massage.findOneAndDelete({ massageID: req.params.id });
-        res.json(massage);
-    } catch (err) {
-        res.status(500).json({ message: 'dont connected' });
-    }
-};
