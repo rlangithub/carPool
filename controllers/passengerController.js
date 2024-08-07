@@ -2,7 +2,6 @@ const { serviceGetDriveById } = require('../services/drive');
 const { joinUser } = require('../services/chat');
 
 exports.joinDrive = async (req, res) => {
-    // exports.joinDriver = async (req, res, socket) => {
     try {
         const currentDrive = await serviceGetDriveById(req.params.id,'Passenger');
         if (currentDrive.passengers.length < currentDrive.places) {

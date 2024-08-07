@@ -1,4 +1,3 @@
-const { log } = require('console');
 const Drive = require('../models/drive');
 const app = require('express')();
 const server = require('http').createServer(app);

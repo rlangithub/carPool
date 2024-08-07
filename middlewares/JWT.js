@@ -13,7 +13,7 @@ exports.jwtMiddleware = (token, driver) => {
         });
         return res ;
     }
-    // else {
-    //     return res.status(401).json({ error: 'לא סופק טוקן בכותרת הבקשה' });
-    // }
+    else {
+        return res.status(401).json({ error: 'לא סופק טוקן בכותרת הבקשה' });
+    }
 };

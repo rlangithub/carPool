@@ -11,7 +11,6 @@ const { addUser, getUser, deleteUser, getUsers } = require('./controllers/userCo
 const driverRouter = require('./routes/driver');
 const driveRouter = require('./routes/drive');
 const passengerRouter = require('./routes/passenger');
-const massageRouter = require('./routes/massage');
 
 const app = express();
 const server = http.createServer(app);
@@ -23,7 +22,7 @@ const io = new Server(server, {
 });
 app.use(cors());
 
-
+//Infrastructure for real time. In development process.
 io.on('connection', (socket) => {
 
     socket.on('login', ({ passenger:{name,email}, room }, callback) => {
@@ -65,8 +64,6 @@ app.use('/drive', driveRouter);
 
 // app.use('/join', passengerRouter(io));
 app.use('/join', passengerRouter);
-app.use('/massage', massageRouter);
-
 const PORT = process.env.PORT || 5000;
 
 mongoose.connect(process.env.CONECTION_URL, { useNewUrlParser: true, useUnifiedTopology: true })
