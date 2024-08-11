@@ -3,14 +3,14 @@ const { generateToken } = require('../services/jwt')
 exports.createDriver = async (req, res) => {
     try {
         let curentDriver = req.body;
-        if (req.body.id == null) {
+        if (curentDriver.phone === '' | curentDriver.phone === null) {
+            curentDriver = await this.getDriverByNameandPassword(curentDriver.name, curentDriver.password);
+        }
+        else {
             curentDriver = await Driver.create(req.body);
             if (!curentDriver) {
                 res.status(404).json({ message: 'Failed to get curentDriver' });
             }
-        }
-        else {
-            curentDriver = this.getDriverByNameandPassword(req.body.name, req.body.password);
         }
         const token = generateToken(curentDriver.id, curentDriver.password);
 
@@ -20,16 +20,16 @@ exports.createDriver = async (req, res) => {
     }
 };
 
-exports.getDriverByNameandPassword = async (req, res) => {
+exports.getDriverByNameandPassword = async (name, password) => {
     try {
-        const driver = await Driver.findOne(req.body.name, req.body.password);
+        const driver = await Driver.findOne({name:name, password:password});
         if (!driver) {
-            res.send("dont found")
+            return "dont found";
         }
-        res.send(driver)
+        return driver;
 
     } catch (error) {
-        res.status(500).json({ message: 'dont connected' + error });
+        return null;
     }
 };
 
