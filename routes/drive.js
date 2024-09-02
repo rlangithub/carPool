@@ -5,6 +5,8 @@ router.post('/', createDrive);
 router.get('/:id', getDriveById);
 router.get('/', getAllDrives);
 router.delete('/:id', deleteDrive);
+router.put('/:id', updateDrive);
+
 
 
 module.exports = router;

@@ -69,7 +69,13 @@ exports.deleteDrive = async (req, res) => {
 
 exports.updateDrive = async (req, res) => {
     try {
-        const drive = await Drive.findOneAndUpdate({ id: req.params.id }, req.body);
+        console.log('updateDrive');
+        console.log('updateDrive id', req.params.id);
+        console.log('updateDrive data',  req.body.data);
+        console.log('updateDrive token', req.body.token);
+        
+        //לבדוק הרשאת TOKEN
+        const drive = await Drive.findOneAndUpdate({ id: req.params.id }, req.body.data);
 
         if (!drive)
             res.status(404).json({ message: 'Failed to get drive' });
