@@ -23,36 +23,59 @@ const io = new Server(server, {
 app.use(cors());
 
 //Infrastructure for real time. In development process.
+// io.on('connection', (socket) => {
+
+//     socket.on('login', ({ passenger:{name,email}, room }, callback) => {
+//         console.log('login');
+//         const member = login(socket.id, {name,email}, room)
+//         if (!member) return callback(error)
+//         socket.join(member.room)
+//         socket.in(room).emit('notification', { title: 'Someone\'s here', description: `${user.name} just entered the room` })
+//         io.in(room).emit('users', getUsers(room))
+//         callback()
+//     })
+
+
+//     socket.on('sendMessage',({passenger:{name,email},room, message}) => {
+//         console.log("sendMessage", message);
+//         io.in(room).emit('message', { user: {name,email}, text: message });
+//     })
+
+// טיפול בהתנתקות
+// socket.on("disconnect",name,room, () => {
+//     console.log("User disconnected");
+//     if (passenger) {
+//         io.in(room).emit('notification', { title: 'Someone just left', description: `${name} just left the room` })
+//         // io.in(room).emit('users', getUsers(user.room))
+//     }
+//     console.log("User disconnected2");
+// })
+
+
+// });
+
+const CHAT_BOT = 'ChatBot'; // Add this
+
 io.on('connection', (socket) => {
+    console.log(`User connected ${socket.id}`);
 
-    socket.on('login', ({ passenger:{name,email}, room }, callback) => {
-        console.log('login');
-        const member = login(socket.id, {name,email}, room)
-        if (!member) return callback(error)
-        socket.join(member.room)
-        socket.in(room).emit('notification', { title: 'Someone\'s here', description: `${user.name} just entered the room` })
-        io.in(room).emit('users', getUsers(room))
-        callback()
-    })
+    socket.on('join_room', (data) => {
+        console.log("data");
 
-
-    socket.on('sendMessage',({passenger:{name,email},room, message}) => {
-        console.log("sendMessage", message);
-        io.in(room).emit('message', { user: {name,email}, text: message });
-    })
-
-    // טיפול בהתנתקות
-    // socket.on("disconnect",name,room, () => {
-    //     console.log("User disconnected");
-    //     if (passenger) {
-    //         io.in(room).emit('notification', { title: 'Someone just left', description: `${name} just left the room` })
-    //         // io.in(room).emit('users', getUsers(user.room))
-    //     }
-    //     console.log("User disconnected2");
-    // })
-
+        const { username, room } = data;
+        socket.join(room);
+    });
+    // Add this
+    let __createdtime__ = Date.now(); // Current timestamp
+    // Send message to all users currently in the room, apart from the user that just joined
+    socket.to(room).emit('receive_message', {
+      message: `${username} has joined the chat room`,
+      username: CHAT_BOT,
+      __createdtime__,
+    });
 
 });
+
 
 // Middleware
 app.use(bodyParser.json());
